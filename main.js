@@ -19,6 +19,10 @@ function loginWindow () {
     })
     winLogin.loadFile('login.html');
 
+    winLogin.on('close', function(){
+        winLogin=null;
+    })
+
     winLogin.setMenu(null);
 }
 
@@ -36,12 +40,58 @@ function indexWindow () {
     winIndex.loadFile('index.html');
 
     //Quit app when closed
-    winIndex.on('closed',function(){
-        app.quit();
-    })
+    // winIndex.on('closed',function(){
+    //     app.quit();
+    // })
 
     winIndex.setMenu(null);
-    winLogin.close();
+    if(winLogin!=null){
+        winLogin.close();
+    }
+}
+
+function viewWindow () {
+    winView = new BrowserWindow({
+     width: 800,
+     height: 600,
+     webPreferences: {
+         nodeIntegration: true,
+         contextIsolation:true,
+         devTools:true,
+         preload:path.join(__dirname, 'view.js')
+        }
+    })
+    winView.loadFile('view.html');
+
+    //Quit app when closed
+    winView.on('close',function(){
+        indexWindow();
+    })
+
+    winView.setMenu(null);
+    winIndex.close();
+}
+
+function manageWindow () {
+    winManage = new BrowserWindow({
+     width: 800,
+     height: 600,
+     webPreferences: {
+         nodeIntegration: true,
+         contextIsolation:true,
+         devTools:true,
+         preload:path.join(__dirname, 'manage.js')
+        }
+    })
+    winManage.loadFile('manage.html');
+
+    //Quit app when closed
+    winManage.on('close',function(){
+        indexWindow();
+    })
+
+    winManage.setMenu(null);
+    winIndex.close();
 }
 
 // When application is ready, we will first add the users to the database (if needed) and then display
@@ -62,6 +112,14 @@ ipcMain.handle('login', (event, obj) => {
 
 ipcMain.handle('logout', (event) => {
     app.quit();
+});
+
+ipcMain.handle('view', (event) => {
+    viewWindow();
+});
+
+ipcMain.handle('manage', (event) => {
+    manageWindow();
 });
 
 // Functionality used to check if login credentials that have been entered are correct.

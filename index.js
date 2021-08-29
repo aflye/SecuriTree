@@ -12,4 +12,12 @@ window.onload = function() {
     logoutBtn.onclick = function(){
       ipcRenderer.invoke("logout")
     }
+
+    viewBtn.onclick = function(){
+        ipcRenderer.invoke("view")
+    }
+
+    manageBtn.onclick = function(){
+        ipcRenderer.invoke("manage")
+    }
 }
