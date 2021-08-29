@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, Notification } = require('electron');
 const path = require('path'); 
 let db = require('./database')
 let data = require('./registered_users');
@@ -17,6 +17,12 @@ function loginWindow () {
         }
     })
     winLogin.loadFile('login.html');
+    //Quit app when closed
+    winLogin.on('closed',function(){
+        app.quit();
+    })
+
+    winLogin.setMenu(null);
 }
 
 // When application is ready, we will first add the users to the database (if needed) and then display
@@ -25,6 +31,10 @@ app.whenReady().then(function(){
     addUsers();
     loginWindow();
 });
+
+app.on('window-all-closed', function () {
+    if (process.platform !== 'darwin') app.quit()
+  })
 
 // If the ipcRenderer is invoked with the commans'login', we will execute the validateLogin function.
 ipcMain.handle('login', (event, obj) => {
@@ -44,31 +54,39 @@ function validateLogin(obj) {
             console.log("LOGIN SUCCESSFUL");
             // we need to send the user to a new window.
         }else{
-            new Notification({
-                title:"Login",
-                body: 'The Email and/or Password entered is incorrect.'
-            }).show()
+            console.log("hello");
+            winLogin.webContents.send('login-failed', results);
+            // new Notification({
+            //     title:"Login",
+            //     body: 'The Email and/or Password entered is incorrect.'
+            // }).show()
         }
     });
 }
 
 // This function will only be run once as it loads the registered_users.json data into the db.
 function addUsers() {
-    const sql = "SELECT * FROM epi_tests";
-    var epidata = data.registered_users;
-    for(var i=0; i<epidata.length; i++){
-        const obj = {
-            username: epidata[i].username,
-            first_name: epidata[i].first_name,
-            surname: epidata[i].surname,
-            password: epidata[i].password
+    db.query("SELECT * FROM epi_tests", function(err, result, fields){
+        if(err){
+            throw err;
         }
+        if(result.length == 0){
+            var epidata = data.registered_users;
+            for(var i=0; i<epidata.length; i++){
+                const obj = {
+                    username: epidata[i].username,
+                    first_name: epidata[i].first_name,
+                    surname: epidata[i].surname,
+                    password: epidata[i].password
+                }
 
-        const sql = "INSERT INTO epi_tests SET ?";
-        db.query(sql, obj, (error, results, fields) => {
-            if(error){
-                console.log(error);
+                const sql = "INSERT INTO epi_tests SET ?";
+                db.query(sql, obj, (error, results, fields) => {
+                    if(error){
+                        console.log(error);
+                    }
+                });
             }
-        });
-    }
+        }
+    });
 }
