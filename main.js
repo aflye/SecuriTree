@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Notification } = require('electron');
 const path = require('path'); 
 let db = require('./database')
-
+let data = require('./registered_users');
 
 var winLogin;
 
@@ -50,4 +50,25 @@ function validateLogin(obj) {
             }).show()
         }
     });
+}
+
+// This function will only be run once as it loads the registered_users.json data into the db.
+function addUsers() {
+    const sql = "SELECT * FROM epi_tests";
+    var epidata = data.registered_users;
+    for(var i=0; i<epidata.length; i++){
+        const obj = {
+            username: epidata[i].username,
+            first_name: epidata[i].first_name,
+            surname: epidata[i].surname,
+            password: epidata[i].password
+        }
+
+        const sql = "INSERT INTO epi_tests SET ?";
+        db.query(sql, obj, (error, results, fields) => {
+            if(error){
+                console.log(error);
+            }
+        });
+    }
 }
