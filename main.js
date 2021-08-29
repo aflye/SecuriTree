@@ -30,3 +30,24 @@ app.whenReady().then(function(){
 ipcMain.handle('login', (event, obj) => {
     validateLogin(obj)
 });
+
+// Functionality used to check if login credentials that have been entered are correct.
+function validateLogin(obj) {
+    const { username, password } = obj 
+    const sql = "SELECT * FROM epi_tests WHERE username=? AND password=?"
+    db.query(sql, [username, password], (error, results, fields) => {
+        if(error){ 
+            console.log(error);
+        }
+        
+        if(results.length > 0){
+            console.log("LOGIN SUCCESSFUL");
+            // we need to send the user to a new window.
+        }else{
+            new Notification({
+                title:"Login",
+                body: 'The Email and/or Password entered is incorrect.'
+            }).show()
+        }
+    });
+}
