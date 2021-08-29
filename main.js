@@ -4,11 +4,12 @@ let db = require('./database')
 let data = require('./registered_users');
 
 var winLogin;
+var winIndex;
 
 function loginWindow () {
     winLogin = new BrowserWindow({
-     width: 800,
-     height: 600,
+     width: 600,
+     height: 400,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -17,12 +18,30 @@ function loginWindow () {
         }
     })
     winLogin.loadFile('login.html');
+
+    winLogin.setMenu(null);
+}
+
+function indexWindow () {
+    winIndex = new BrowserWindow({
+     width: 800,
+     height: 600,
+     webPreferences: {
+         nodeIntegration: true,
+         contextIsolation:true,
+         devTools:true,
+         preload:path.join(__dirname, 'index.js')
+        }
+    })
+    winIndex.loadFile('index.html');
+
     //Quit app when closed
-    winLogin.on('closed',function(){
+    winIndex.on('closed',function(){
         app.quit();
     })
 
-    winLogin.setMenu(null);
+    winIndex.setMenu(null);
+    winLogin.close();
 }
 
 // When application is ready, we will first add the users to the database (if needed) and then display
@@ -41,6 +60,10 @@ ipcMain.handle('login', (event, obj) => {
     validateLogin(obj)
 });
 
+ipcMain.handle('logout', (event) => {
+    app.quit();
+});
+
 // Functionality used to check if login credentials that have been entered are correct.
 function validateLogin(obj) {
     const { username, password } = obj 
@@ -52,14 +75,9 @@ function validateLogin(obj) {
         
         if(results.length > 0){
             console.log("LOGIN SUCCESSFUL");
-            // we need to send the user to a new window.
+            indexWindow();
         }else{
-            console.log("hello");
             winLogin.webContents.send('login-failed', results);
-            // new Notification({
-            //     title:"Login",
-            //     body: 'The Email and/or Password entered is incorrect.'
-            // }).show()
         }
     });
 }
