@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain, Notification } = require('electron');
 const path = require('path'); 
+let db = require('./database')
+
 
 var winLogin;
 
