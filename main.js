@@ -1,7 +1,8 @@
 const { app, BrowserWindow, Menu, ipcMain, Notification } = require('electron');
 const path = require('path'); 
 let db = require('./database')
-let data = require('./registered_users');
+let userData = require('./registered_users');
+let systemData = require('./system_data');
 
 var winLogin;
 var winIndex;
@@ -147,7 +148,7 @@ function addUsers() {
             throw err;
         }
         if(result.length == 0){
-            var epidata = data.registered_users;
+            var epidata = userData.registered_users;
             for(var i=0; i<epidata.length; i++){
                 const obj = {
                     username: epidata[i].username,
@@ -157,6 +158,23 @@ function addUsers() {
                 }
 
                 const sql = "INSERT INTO epi_tests SET ?";
+                db.query(sql, obj, (error, results, fields) => {
+                    if(error){
+                        console.log(error);
+                    }
+                });
+            }
+
+            var areaData = systemData.system_data.areas;
+            console.log(areaData[0].child_area_ids[0]);
+            for(var i=0; i<areaData.length; i++){
+                const obj = {
+                    id: areaData[i].id,
+                    name: areaData[i].name,
+                    parent_area: areaData[i].parent_area
+                }
+
+                const sql = "INSERT INTO areas SET ?";
                 db.query(sql, obj, (error, results, fields) => {
                     if(error){
                         console.log(error);
