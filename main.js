@@ -169,17 +169,55 @@ function addUsers() {
             console.log(areaData[0].child_area_ids[0]);
             for(var i=0; i<areaData.length; i++){
                 const obj = {
-                    id: areaData[i].id,
+                    area_id: areaData[i].id,
                     name: areaData[i].name,
-                    parent_area: areaData[i].parent_area
+                    parent_area: areaData[i].parent_area,
+                    status: null
                 }
 
-                const sql = "INSERT INTO areas SET ?";
+                const sql = "INSERT INTO system_data SET ?";
                 db.query(sql, obj, (error, results, fields) => {
                     if(error){
                         console.log(error);
                     }
                 });
+            }
+
+            var doorData = systemData.system_data.doors;
+            console.log(doorData[0]);
+            for(var i=0; i<doorData.length; i++){
+                const obj = {
+                    area_id: doorData[i].id,
+                    name: doorData[i].name,
+                    parent_area: doorData[i].parent_area,
+                    status: doorData[i].status
+                }
+
+                const sql = "INSERT INTO system_data SET ?";
+                db.query(sql, obj, (error, results, fields) => {
+                    if(error){
+                        console.log(error);
+                    }
+                });
+            }
+
+            var ruleData = systemData.system_data.access_rules;
+            console.log(ruleData[0]);
+            for(var i=0; i<ruleData.length; i++){
+                for(var j=0; j<ruleData[i].doors.length; j++){
+                    const obj = {
+                        rule_id: ruleData[i].id,
+                        name: ruleData[i].name,
+                        door: ruleData[i].doors[j]
+                    }
+
+                    const sql = "INSERT INTO access_rules SET ?";
+                    db.query(sql, obj, (error, results, fields) => {
+                        if(error){
+                            console.log(error);
+                        }
+                    });
+                }
             }
         }
     });
