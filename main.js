@@ -125,6 +125,10 @@ ipcMain.handle('manage', (event) => {
     manageWindow();
 });
 
+ipcMain.handle('back', (event) => {
+    winManage.close();
+})
+
 // Functionality used to check if login credentials that have been entered are correct.
 function validateLogin(obj) {
     const { username, password } = obj 
