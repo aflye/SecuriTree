@@ -92,7 +92,7 @@ function manageWindow () {
 
     //Quit app when closed
     winManage.on('close',function(){
-        if(winIndex!=null)
+        if(winIndex==null)
             indexWindow();
         winManage=null;
     })
@@ -141,7 +141,7 @@ function unlockWindow () {
          nodeIntegration: true,
          contextIsolation:true,
          devTools:true,
-         preload:path.join(__dirname, 'manage.js')
+         preload:path.join(__dirname, 'unlock.js')
         }
     })
     winUnlock.loadFile('unlock.html');
@@ -149,6 +149,7 @@ function unlockWindow () {
     //Quit app when closed
     winUnlock.on('close',function(){
         manageWindow();
+        winUnlock=null;
     })
 
     winUnlock.setMenu(null);
@@ -160,7 +161,6 @@ function unlockWindow () {
 // The login window.
 app.whenReady().then(function(){
     globalShortcut.register('Esc', () => {
-        // Do stuff when Y and either Command/Control is pressed.
         const currentWin = BrowserWindow.getFocusedWindow();
         currentWin.close();
     })
@@ -202,8 +202,11 @@ ipcMain.handle('loadUnlock', (event) => {
 });
 
 ipcMain.handle('lockDoor', (event, doorInput) => {
-    console.log(doorInput);
     lockDoor(doorInput);
+});
+
+ipcMain.handle('unlockDoor', (event, doorInput) => {
+    unlockDoor(doorInput);
 });
 
 // Functionality to Lock Door
@@ -221,6 +224,30 @@ function lockDoor(doorInput){
             const lockString = "closed";
             const sql2 = "UPDATE system_data SET status=? WHERE area_id=?"
             db.query(sql2, [lockString, doorInput], (error, input) => {
+                if(error){
+                    console.log(error)
+                }
+
+            })
+        })
+    }
+}
+
+// Functionality to Unlock Door
+function unlockDoor(doorInput){
+    const errorMessage = "Please enter a valid Door ID.";
+    if(doorInput.length!=36){
+        winUnlock.webContents.send('invalid-id', errorMessage);
+    }else{
+        const sql = "SELECT status FROM system_data WHERE area_id=?"
+        db.query(sql, doorInput, (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            console.log(result[0].status);
+            const unlockString = "open";
+            const sql2 = "UPDATE system_data SET status=? WHERE area_id=?"
+            db.query(sql2, [unlockString, doorInput], (error, input) => {
                 if(error){
                     console.log(error)
                 }
