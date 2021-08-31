@@ -10,11 +10,11 @@ window.onload = function() {
     backBtn = document.getElementById("backBtn")
 
     lockBtn.onclick = function(){
-      ipcRenderer.invoke("lockDoor")
+      ipcRenderer.invoke("loadLock")
     }
 
     unlockBtn.onclick = function(){
-        ipcRenderer.invoke("unlockDoor")
+        ipcRenderer.invoke("loadUnlock")
     }
 
     backBtn.onclick = function(){

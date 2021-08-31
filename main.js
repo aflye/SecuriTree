@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, Notification, globalShortcut} = require('electron');
 const path = require('path'); 
 let db = require('./database')
 let userData = require('./registered_users');
@@ -64,7 +64,7 @@ function viewWindow () {
     })
     winView.loadFile('view.html');
 
-    winView.webContents.openDevTools()
+    // winView.webContents.openDevTools()
 
     //Quit app when closed
     winView.on('close',function(){
@@ -87,16 +87,19 @@ function manageWindow () {
         }
     })
     winManage.loadFile('manage.html');
+    winManage.webContents.openDevTools()
+
 
     //Quit app when closed
     winManage.on('close',function(){
-        indexWindow();
+        if(winIndex!=null)
+            indexWindow();
         winManage=null;
     })
 
-    winManage.on('destroy', function(){
-        winManage=null;
-    })
+    // winManage.on('destroy', function(){
+    //     winManage=null;
+    // })
 
     winManage.setMenu(null);
     if(winIndex!=null)
@@ -112,10 +115,11 @@ function lockWindow () {
          nodeIntegration: true,
          contextIsolation:true,
          devTools:true,
-         preload:path.join(__dirname, 'manage.js')
+         preload:path.join(__dirname, 'lock.js')
         }
     })
     winLock.loadFile('lock.html');
+    winLock.webContents.openDevTools()
 
     //Quit app when closed
     winLock.on('close',function(){
@@ -125,7 +129,7 @@ function lockWindow () {
 
     winLock.setMenu(null);
     if(winManage!=null)
-        winManage.destroy();
+        winManage.close();
 }
 
 // window used to unlock door
@@ -149,19 +153,24 @@ function unlockWindow () {
 
     winUnlock.setMenu(null);
     if(winManage!=null)
-        winManage.destroy();
+        winManage.close();
 }
 
 // When application is ready, we will first add the users to the database (if needed) and then display
 // The login window.
 app.whenReady().then(function(){
+    globalShortcut.register('Esc', () => {
+        // Do stuff when Y and either Command/Control is pressed.
+        const currentWin = BrowserWindow.getFocusedWindow();
+        currentWin.close();
+    })
     addUsers();
     loginWindow();
 });
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
-  })
+})
 
 // If the ipcRenderer is invoked with the commans'login', we will execute the validateLogin function.
 ipcMain.handle('login', (event, obj) => {
@@ -184,13 +193,42 @@ ipcMain.handle('back', (event) => {
     winManage.close();
 });
 
-ipcMain.handle('lockDoor', (event) => {
+ipcMain.handle('loadLock', (event) => {
     lockWindow();
 });
 
-ipcMain.handle('unlockDoor', (event) => {
+ipcMain.handle('loadUnlock', (event) => {
     unlockWindow();
 });
+
+ipcMain.handle('lockDoor', (event, doorInput) => {
+    console.log(doorInput);
+    lockDoor(doorInput);
+});
+
+// Functionality to Lock Door
+function lockDoor(doorInput){
+    const errorMessage = "Please enter a valid Door ID.";
+    if(doorInput.length!=36){
+        winLock.webContents.send('invalid-id', errorMessage);
+    }else{
+        const sql = "SELECT status FROM system_data WHERE area_id=?"
+        db.query(sql, doorInput, (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            console.log(result[0].status);
+            const lockString = "closed";
+            const sql2 = "UPDATE system_data SET status=? WHERE area_id=?"
+            db.query(sql2, [lockString, doorInput], (error, input) => {
+                if(error){
+                    console.log(error)
+                }
+
+            })
+        })
+    }
+}
 
 // Functionality used to check if login credentials that have been entered are correct.
 function validateLogin(obj) {
