@@ -41,9 +41,9 @@ function indexWindow () {
     winIndex.loadFile('index.html');
 
     //Quit app when closed
-    // winIndex.on('closed',function(){
-    //     app.quit();
-    // })
+    winIndex.on('closed',function(){
+        winIndex=null;
+    })
 
     winIndex.setMenu(null);
     if(winLogin!=null){
@@ -91,10 +91,65 @@ function manageWindow () {
     //Quit app when closed
     winManage.on('close',function(){
         indexWindow();
+        winManage=null;
+    })
+
+    winManage.on('destroy', function(){
+        winManage=null;
     })
 
     winManage.setMenu(null);
-    winIndex.close();
+    if(winIndex!=null)
+        winIndex.close();
+}
+
+// window used to lock door
+function lockWindow () {
+    winLock = new BrowserWindow({
+     width: 800,
+     height: 600,
+     webPreferences: {
+         nodeIntegration: true,
+         contextIsolation:true,
+         devTools:true,
+         preload:path.join(__dirname, 'manage.js')
+        }
+    })
+    winLock.loadFile('lock.html');
+
+    //Quit app when closed
+    winLock.on('close',function(){
+        manageWindow();
+        winLock=null;
+    })
+
+    winLock.setMenu(null);
+    if(winManage!=null)
+        winManage.destroy();
+}
+
+// window used to unlock door
+function unlockWindow () {
+    winUnlock = new BrowserWindow({
+     width: 800,
+     height: 600,
+     webPreferences: {
+         nodeIntegration: true,
+         contextIsolation:true,
+         devTools:true,
+         preload:path.join(__dirname, 'manage.js')
+        }
+    })
+    winUnlock.loadFile('unlock.html');
+
+    //Quit app when closed
+    winUnlock.on('close',function(){
+        manageWindow();
+    })
+
+    winUnlock.setMenu(null);
+    if(winManage!=null)
+        winManage.destroy();
 }
 
 // When application is ready, we will first add the users to the database (if needed) and then display
@@ -127,7 +182,15 @@ ipcMain.handle('manage', (event) => {
 
 ipcMain.handle('back', (event) => {
     winManage.close();
-})
+});
+
+ipcMain.handle('lockDoor', (event) => {
+    lockWindow();
+});
+
+ipcMain.handle('unlockDoor', (event) => {
+    unlockWindow();
+});
 
 // Functionality used to check if login credentials that have been entered are correct.
 function validateLogin(obj) {
