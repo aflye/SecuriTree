@@ -19,7 +19,23 @@ window.onload = function() {
         if(err){
             throw err;
         }else{
-            console.log(result)
+            var list = [];
+            var listOfChildren = [];
+            for(var i=0; i<result.length; i++){
+                if(result[i].status!=null){
+                    break;
+                }else{
+                    listOfChildren.push(result[i].name);
+                }
+                for(var j=i; j<result.length; j++){
+                    if(result[j].parent_area == result[i].area_id && result[j].status!=null){
+                        listOfChildren.push(result[j].name);
+                    }
+                }
+                list.push(listOfChildren);
+                listOfChildren=[];
+            }
+            console.log(list);
         }
     });
 }

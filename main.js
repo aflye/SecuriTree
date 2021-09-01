@@ -64,7 +64,7 @@ function viewWindow () {
     })
     winView.loadFile('view.html');
 
-    // winView.webContents.openDevTools()
+    winView.webContents.openDevTools()
 
     //Quit app when closed
     winView.on('close',function(){
