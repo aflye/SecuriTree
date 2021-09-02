@@ -27,18 +27,23 @@ window.onload = function() {
                 if(result[i].status!=null){
                     break;
                 }else{
-                    if(i==0){
-                        listOfChildren.push([result[i].name, counter]);
-                        currentParent = result[i].area_id;
-                    }else{
-                        if(result[i].parent_area == currentParent){
-                            listOfChildren.push([result[i].name, counter+1]);
-                        }else{
-                            currentParent=result[i].parent_area;
-                            counter++;
-                            listOfChildren.push([result[i].name, counter]);
+                    console.log("here?");
+
+                    var temp = result[i];
+                    console.log("before while")
+                    while(temp.parent_area!=null){
+                        counter++;
+                        for(var x=0; x<result.length; x++){
+                            if(result[x].area_id==temp.parent_area){
+                                temp = result[x];
+                            }
                         }
                     }
+                    console.log(i)
+                    listOfChildren.push([result[i].name, counter]);
+                    counter=0;
+
+
                 }
                 for(var j=i; j<result.length; j++){
                     if(result[j].parent_area == result[i].area_id && result[j].status!=null){
@@ -48,12 +53,14 @@ window.onload = function() {
                 list.push(listOfChildren);
                 listOfChildren=[];
             }
-            console.log(list[0][0]) //Object of area
-            console.log(list[0][1]) //Object of first door
-            console.log(list[0][0][0]) //Name of Area
-            console.log(list[0][0][1]) //Counter
-            console.log(list[0][1][0]) //Name of First Door
-            console.log(list[0][1][1]) //Door Status
+
+            console.log(list)
+            // console.log(list[0][0]) //Object of area
+            // console.log(list[0][1]) //Object of first door
+            // console.log(list[0][0][0]) //Name of Area
+            // console.log(list[0][0][1]) //Counter
+            // console.log(list[0][1][0]) //Name of First Door
+            // console.log(list[0][1][1]) //Door Status
 
             var element = document.getElementById("container");
             var areaTag = document.createElement("pre");
