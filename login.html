@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login.css">
     <title>SecuriTree</title>
 </head>
 <body>
-    <div>
+    <div id="container">
         <h1 id="title">SECURITREE - Security Dashboard</h1>
         <h3 id="message">Welcome to SecuriTree!</h3>
-        <h3 id="instr">Please enter your login credentials to begin.</h3>
+        <h4 id="instr">Please enter your login credentials to begin.</h4>
         <div id="form">
-            <input id="username" type = "text" placeholder = "Username">
+            <input id="username" class="input-boxes" type = "text" placeholder = "Username">
             <br>
             <br>
-            <input id="password" type = "password" placeholder = "Password">
+            <input id="password" class="input-boxes" type = "password" placeholder = "Password">
             <br>
             <br> 
             <button id="loginBtn"> Confirm </button>
         </div>
     </div>
+    <p>Press <kbd>ESC</kbd> To Exit.</p>
 </body>
 </html>

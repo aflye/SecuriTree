@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&family=Roboto&display=swap');
+body{
+    /* background: linear-gradient(45deg, #3ca6e4 0%, #5b3ce4 100%); */
+    background-color: #0b0c10;
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: 'Roboto', sans-serif;
+}
+
+#title{
+    font-family: 'Poppins', sans-serif;
+    color: #66fcf1;
+}
+
+#message{
+    color: #45a29e
+}
+
+p{
+    color: #242733;
+    position: fixed;
+    bottom: 0;
+}
+
+.form-buttons {
+	height:30px;
+    left: 10px;
+	display: block;
+	text-decoration: none;
+	margin-top: 10px;
+	background-color: #0b0c10;
+	border: 2px solid #242733;
+	border-radius: 1em;
+	color: #c5c6c7;
+	outline: none;
+	transition: border-color 0.2s;
+}
+
+.form-buttons:hover{
+	border-color: #45a29e;
+}

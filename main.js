@@ -11,6 +11,8 @@ function loginWindow () {
     winLogin = new BrowserWindow({
      width: 600,
      height: 400,
+     resizable:false,
+     frame:false,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -31,6 +33,8 @@ function indexWindow () {
     winIndex = new BrowserWindow({
      width: 800,
      height: 600,
+     resizable:false,
+     frame:false,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -53,8 +57,10 @@ function indexWindow () {
 
 function viewWindow () {
     winView = new BrowserWindow({
-     width: 800,
-     height: 600,
+     maxWidth: 800,
+     maxHeight: 600,
+     resizable:false,
+     frame:false,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -79,6 +85,8 @@ function manageWindow () {
     winManage = new BrowserWindow({
      width: 800,
      height: 600,
+     resizable:false,
+     frame:false,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -87,7 +95,7 @@ function manageWindow () {
         }
     })
     winManage.loadFile('manage.html');
-    winManage.webContents.openDevTools()
+    // winManage.webContents.openDevTools()
 
 
     //Quit app when closed
@@ -97,9 +105,9 @@ function manageWindow () {
         winManage=null;
     })
 
-    // winManage.on('destroy', function(){
-    //     winManage=null;
-    // })
+    winManage.on('destroy', function(){
+        winManage=null;
+    })
 
     winManage.setMenu(null);
     if(winIndex!=null)
@@ -111,6 +119,8 @@ function lockWindow () {
     winLock = new BrowserWindow({
      width: 800,
      height: 600,
+     resizable:false,
+     frame:false,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -119,7 +129,7 @@ function lockWindow () {
         }
     })
     winLock.loadFile('lock.html');
-    winLock.webContents.openDevTools()
+    // winLock.webContents.openDevTools()
 
     //Quit app when closed
     winLock.on('close',function(){
@@ -129,7 +139,7 @@ function lockWindow () {
 
     winLock.setMenu(null);
     if(winManage!=null)
-        winManage.close();
+        winManage.destroy();
 }
 
 // window used to unlock door
@@ -137,6 +147,8 @@ function unlockWindow () {
     winUnlock = new BrowserWindow({
      width: 800,
      height: 600,
+     resizable:false,
+     frame:false,
      webPreferences: {
          nodeIntegration: true,
          contextIsolation:true,
@@ -154,7 +166,7 @@ function unlockWindow () {
 
     winUnlock.setMenu(null);
     if(winManage!=null)
-        winManage.close();
+        winManage.destroy();
 }
 
 // When application is ready, we will first add the users to the database (if needed) and then display

@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login.css">
     <title>SecuriTree</title>
 </head>
 <body>
     <div>
         <h1 id="title">SECURITREE - Security Dashboard</h1>
         <h3 id="message">Unlock Door</h3>
-        <h3 id="message2" > Please enter the ID  of the door to unlock. </h3>
-        <h3 id="message3" > Press <kbd>ESC</kbd> to return to the door management screen. </h3>
+        <h4 id="instr" > Please enter the ID  of the door to unlock. </h4>
         <div id="form">
-            <input type="text" id="door-input" value="Door ID">
+            <input type="text" class="input-boxes" id="door-input" placeholder="Door ID">
             <button id="unlockDoorBtn" >Unlock</button>
         </div>
     </div>
+    <p>Press <kbd>ESC</kbd> To Exit.</p>
 </body>
 </html>
