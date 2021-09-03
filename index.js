@@ -9,15 +9,15 @@ window.onload = function() {
     manageBtn = document.getElementById("manageBtn")
     logoutBtn = document.getElementById("logoutBtn")
 
-    logoutBtn.onclick = function(){
-      ipcRenderer.invoke("logout")
+    logoutBtn.onclick = async function(){
+        await ipcRenderer.invoke("logout")
     }
 
-    viewBtn.onclick = function(){
-        ipcRenderer.invoke("view")
+    viewBtn.onclick = async function(){
+        await ipcRenderer.invoke("view")
     }
 
-    manageBtn.onclick = function(){
-        ipcRenderer.invoke("manage")
+    manageBtn.onclick = async function(){
+        await ipcRenderer.invoke("manage")
     }
 }

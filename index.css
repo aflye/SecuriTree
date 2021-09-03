@@ -13,7 +13,8 @@ body{
 }
 
 #message{
-    color: #45a29e
+    color: #45a29e;
+    font-weight: 200;
 }
 
 p{

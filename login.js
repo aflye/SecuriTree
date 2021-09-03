@@ -13,13 +13,13 @@ window.onload = function() {
   message = document.getElementById("message");
   instr = document.getElementById("instr");
 
-  loginBtn.onclick = function(){
+  loginBtn.onclick = async function(){
       const obj = {username:username.value, password:password.value }
       ipcRenderer.invoke("login", obj)
   }
 }
 
-ipcRenderer.on('login-failed', (event, results) => {
+ipcRenderer.on('login-failed', async(event, results) => {
   message.innerHTML = "Login failed.";
   instr.innerHTML = "Please enter your login credentials to try again.";
 })

@@ -7,4 +7,12 @@ const db = mysql.createConnection({
     database:'electron'
 });
 
+const db2 = mysql.createConnection({
+    host:'localhost',
+    user:'root',
+    password:'',
+    database:'electron'
+});
+
 module.exports = db
+module.exports = db2

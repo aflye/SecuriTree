@@ -9,15 +9,15 @@ window.onload = function() {
     unlockBtn = document.getElementById("unlockBtn")
     backBtn = document.getElementById("backBtn")
 
-    lockBtn.onclick = function(){
+    lockBtn.onclick = async function(){
       ipcRenderer.invoke("loadLock")
     }
 
-    unlockBtn.onclick = function(){
+    unlockBtn.onclick = async function(){
         ipcRenderer.invoke("loadUnlock")
     }
 
-    backBtn.onclick = function(){
+    backBtn.onclick = async function(){
         ipcRenderer.invoke("back")
     }
 }

@@ -7,7 +7,7 @@ window.onload = function() {
     unlockDoorBtn = document.getElementById("unlockDoorBtn")
     doorInput = document.getElementById("door-input").value
 
-    unlockDoorBtn.onclick = function(){
+    unlockDoorBtn.onclick = async function(){
         doorInput = document.getElementById("door-input").value
         console.log(doorInput);
         ipcRenderer.invoke("unlockDoor", doorInput);

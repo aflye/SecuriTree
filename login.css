@@ -13,11 +13,13 @@ body{
 }
 
 #message{
-    color: #45a29e
+    color: #45a29e;
+	font-weight: 200;
 }
 
 #instr{
     color: #c5c6c7;
+	font-weight: 200;
 }
 
 p{

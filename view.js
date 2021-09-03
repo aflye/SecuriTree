@@ -46,8 +46,21 @@ async function getEntites(){
                 listOfChildren.push([result[i].name, counter]);
                 counter=0;
             }
-            console.log("atleast")
-            await accessResults(result[i], i);
+            // console.log("atleast")
+            for(let j=i; j<result.length; j++){
+                console.log("welcomeloop")
+                if(result[j].parent_area == result[i].area_id && result[j].status!=null){
+                    var nameArray = [];
+                    const sql2 = "SELECT * FROM access_rules WHERE door=?";
+                    db.query(sql2, result[j].area_id, async (error, result2) => {
+                        if (error) throw(error);
+                        for(let k=0; k<result2.length; k++){
+                            nameArray.push(result2[k].name);
+                        }
+                    });
+                    listOfChildren.push([result[j].name, result[j].status, nameArray]);
+                }
+            }
             list.push(listOfChildren);
             listOfChildren=[];
         }
@@ -92,23 +105,20 @@ async function getEntites(){
         })
 }
 
-function accessResults(parentResult, i){
-    console.log("welcome")
-    return new Promise(function(resolve, reject){
-        console.log("welcome2")
-        console.log(parentResult.length)
-        console.log(parentResult)
-        for(let j=i; j<parentResult.length; j++){
-            console.log("welcomeloop")
-            if(parentResult[j].parent_area == parentResult[i].area_id && parentResult[j].status!=null){
-                console.log("should ber here")
-                const sql = "SELECT * FROM access_rules WHERE door=?";
-                db.query(sql, parentResult[j].area_id, function(error, result) {
-                    if (error) reject( error);
-                    listOfChildren.push([parentResult[j].name, parentResult[j].status, result]);
-                    resolve(listOfChildren);
-                });
-            }
-        }
-    })
-}
+// function accessResults(parentResult, i){
+//     console.log("welcome")
+//         console.log("welcome2")
+//         console.log(parentResult.length)
+//         console.log(parentResult)
+//         for(let j=i; j<parentResult.length; j++){
+//             console.log("welcomeloop")
+//             if(parentResult[j].parent_area == parentResult[i].area_id && parentResult[j].status!=null){
+//                 console.log("should ber here")
+//                 const sql = "SELECT * FROM access_rules WHERE door=?";
+//                 db.query(sql, parentResult[j].area_id, function(error, result) {
+//                     if (error) reject( error);
+//                     listOfChildren.push([parentResult[j].name, parentResult[j].status, result]);
+//                 });
+//             }
+//         }
+// }
