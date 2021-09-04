@@ -51,11 +51,17 @@ p{
 	background-color: #0b0c10;
 	border: 2px solid #242733;
 	border-radius: 1em;
-	color: #c5c6c7;
+	color: #b5c0ca;
 	outline: none;
 	transition: border-color 0.2s;
 }
 
 #loginBtn:hover, #lockDoorBtn:hover, #unlockDoorBrn:hover{
 	border-color: #45a29e;
+}
+
+pre{
+	font-family: 'Poppins', sans-serif;
+	color: #b5c0ca;
+	font-weight: 200;
 }

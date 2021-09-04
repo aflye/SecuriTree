@@ -5,13 +5,8 @@ let container;
 let view;
 
 window.onload = function() { 
-    // console.log("LOADED")
     view = document.getElementById("view");
     container = document.getElementById("container");
-
-    view.onclick = function(){
-        view.innerHTML = "changed";
-    }
 
     var currentParent = "";
     var counter = 0;
