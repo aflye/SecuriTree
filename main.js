@@ -58,8 +58,8 @@ function indexWindow () {
 
 function viewWindow () {
     winView = new BrowserWindow({
-     maxWidth: 800,
-     maxHeight: 600,
+     width: 1200,
+     height: 700,
      resizable:false,
      frame:false,
      webPreferences: {
