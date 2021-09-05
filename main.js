@@ -1,12 +1,13 @@
 const { app, BrowserWindow, Menu, ipcMain, Notification, globalShortcut} = require('electron');
+const bcrypt = require('bcrypt');
 const path = require('path'); 
 let db = require('./database')
-let db2 = require('./database')
 let userData = require('./registered_users');
 let systemData = require('./system_data');
 
 var winLogin;
 var winIndex;
+const saltRounds = 10;
 
 function loginWindow () {
     winLogin = new BrowserWindow({
@@ -177,7 +178,7 @@ app.whenReady().then(function(){
         const currentWin = BrowserWindow.getFocusedWindow();
         currentWin.close();
     })
-    addUsers();
+    Promise.resolve(addUsers());
     loginWindow();
 });
 
@@ -187,8 +188,9 @@ app.on('window-all-closed', function () {
 
 // If the ipcRenderer is invoked with the commans'login', we will execute the validateLogin function.
 ipcMain.handle('login', async (event, obj) => {
-    const result = await validateLogin(obj)
-    return result
+    Promise.resolve(validateLogin(obj));
+    // const result = await validateLogin(obj)
+    // return result
 });
 
 ipcMain.handle('logout', async (event) => {
@@ -198,10 +200,6 @@ ipcMain.handle('logout', async (event) => {
 
 ipcMain.handle('view', async (event) => {
     const result = await viewWindow();
-    // const callEntity = await getEntity();
-    // console.log(callEntity)
-    // const callAccess = await getAccess();
-    // console.log("hello")
 });
 
 ipcMain.handle('manage', async (event) => {
@@ -233,55 +231,6 @@ ipcMain.handle('unlockDoor', async (event, doorInput) => {
     const result = await unlockDoor(doorInput);
     return result
 });
-
-// var listOfChildren = [];
-// var list = [];
-// var counter=0;
-
-// async function getEntity(){
-//     const sql ="SELECT * FROM system_data";
-//     db.query(sql, async (err, result) => {
-//         if(err) throw err;
-//         for(var i=0; i<result.length; i++){
-//              if(result[i].status!=null){
-//                  //if it is a door, cancel
-//                 break;
-//             }else{
-//                 var temp = result[i];
-//                 while(temp.parent_area!=null){
-//                     counter++;
-//                     for(var x=0; x<result.length; x++){
-//                         if(result[x].area_id==temp.parent_area){
-//                             temp = result[x];
-//                         }
-//                     }
-//                 }
-//                 const pushReq = await listOfChildren.push([result[i].name, counter]);
-//                 counter=0;
-//             }
-//             var tempRes = result;
-//             for(let j=i; j<tempRes.length; j++){
-//                 if(tempRes[i].area_id == tempRes[j].parent_area && tempRes[j].status!=null){
-                    // var nameArray = [];
-                    // const sql2 = "SELECT * FROM access_rules WHERE door=?";
-                    // db.query(sql2, tempRes[j].area_id, async (error, result2) => {
-                    //     if (error) throw(error);
-                    //     for(let k=0; k<result2.length; k++){
-                    //         nameArray.push(result2[k].name);
-                    //     }
-                    // });
-                    // listOfChildren.push([tempRes[j].name, tempRes[j].status, nameArray]);
-//                 }
-//             }
-//             list.push(listOfChildren);
-//             listOfChildren=[];
-//         }
-//         console.log(list)
-//     });
-//     const sendReq = await winView.webContents.send('entity-content', list);
-//     sendReq;
-//     return list;
-// }
 
 // Functionality to Lock Door
 async function lockDoor(doorInput){
@@ -336,18 +285,21 @@ async function unlockDoor(doorInput){
 // Functionality used to check if login credentials that have been entered are correct.
 async function validateLogin(obj) {
     const { username, password } = obj 
-    const sql = "SELECT * FROM epi_tests WHERE username=? AND password=?"
-    db.query(sql, [username, password], async (error, results) => {
+    const sql = "SELECT password FROM epi_tests WHERE username=?"
+    db.query(sql, [username], async (error, result) => {
         if(error){ 
             console.log(error);
         }
+
+        const flag = await decryptPass(password, result[0].password);
+        // console.log(flag)
         
-        if(results.length > 0){
+        if(flag){
             console.log("LOGIN SUCCESSFUL");
-            indexWindow();
+            return indexWindow();
         }else{
-            const sendReq = await winLogin.webContents.send('login-failed', results);
-            sendReq;
+            const sendReq = await winLogin.webContents.send('login-failed', result);
+            return sendReq;
         }
     });
 }
@@ -356,7 +308,7 @@ async function validateLogin(obj) {
 async function addUsers() {
     db.query("SELECT * FROM epi_tests", async function(err, result){
         if(err){
-            throw err;
+            console.log (err);
         }
         if(result.length == 0){
             var epidata = userData.registered_users;
@@ -367,6 +319,8 @@ async function addUsers() {
                     surname: epidata[i].surname,
                     password: epidata[i].password
                 }
+
+                obj.password = await encryptPass(obj.password);
 
                 const sql = "INSERT INTO epi_tests SET ?";
                 db.query(sql, obj, async (error, results, fields) => {
@@ -432,4 +386,17 @@ async function addUsers() {
             }
         }
     });
+}
+
+async function encryptPass(password){
+    const hashed_password = await bcrypt.hash(password, saltRounds);
+    return hashed_password;
+}
+
+async function decryptPass(passwordGiven, hashedPassword){
+    console.log(passwordGiven);
+    console.log(hashedPassword)
+    const flag = await bcrypt.compare(passwordGiven, hashedPassword);
+    console.log(flag)
+    return flag;
 }
