@@ -303,7 +303,6 @@ async function lockDoor(doorInput){
             if(error){
                 console.log(error)
             }
-            console.log(result[0].status);
             const lockString = "closed";
             const sql2 = "UPDATE system_data SET status=? WHERE area_id=?"
             db.query(sql2, [lockString, doorInput], async (error, input) => {
@@ -328,7 +327,6 @@ async function unlockDoor(doorInput){
             if(error){
                 console.log(error)
             }
-            console.log(result[0].status);
             const unlockString = "open";
             const sql2 = "UPDATE system_data SET status=? WHERE area_id=?"
             db.query(sql2, [unlockString, doorInput], async (error, input) => {
@@ -347,14 +345,12 @@ async function validateLogin(obj) {
     const sql = "SELECT password FROM users WHERE username=?"
     db.query(sql, [username], async (error, result) => {
         if(error){ 
-            console.log("ERRORERRORERROR");
             console.log(error);
         }
 
         const flag = await decryptPass(password, result[0].password);
         
         if(flag){
-            console.log("LOGIN SUCCESSFUL");
             return indexWindow();
         }else{
             const sendReq = await winLogin.webContents.send('login-failed', result);
@@ -390,7 +386,6 @@ async function addUsers() {
             }
 
             var areaData = systemData.system_data.areas;
-            console.log(areaData[0].child_area_ids[0]);
             for(var i=0; i<areaData.length; i++){
                 const obj = {
                     area_id: areaData[i].id,
@@ -408,7 +403,6 @@ async function addUsers() {
             }
 
             var doorData = systemData.system_data.doors;
-            console.log(doorData[0]);
             for(var i=0; i<doorData.length; i++){
                 const obj = {
                     area_id: doorData[i].id,
@@ -426,7 +420,6 @@ async function addUsers() {
             }
 
             var ruleData = systemData.system_data.access_rules;
-            console.log(ruleData[0]);
             for(var i=0; i<ruleData.length; i++){
                 for(var j=0; j<ruleData[i].doors.length; j++){
                     const obj = {
@@ -453,9 +446,6 @@ async function encryptPass(password){
 }
 
 async function decryptPass(passwordGiven, hashedPassword){
-    console.log(passwordGiven);
-    console.log(hashedPassword)
     const flag = await bcrypt.compare(passwordGiven, hashedPassword);
-    console.log(flag)
     return flag;
 }

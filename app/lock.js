@@ -9,7 +9,6 @@ window.onload = function() {
 
     lockDoorBtn.onclick = async function(){
         doorInput = document.getElementById("door-input").value
-        console.log(doorInput);
         ipcRenderer.invoke("lockDoor", doorInput);
     }
 }
