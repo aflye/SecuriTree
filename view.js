@@ -1,69 +1,70 @@
 const { ipcRenderer } = require('electron')
 let db = require('./database')
 
-let container;
-let view;
-
 window.onload = function() { 
-    Promise.resolve(getEntites()).then(function() {
-        return new Promise(function(resolve, reject) {
-            setTimeout(function() {
-                resolve(setOutput());
-            }, 1000);
-        });
-    })
+    // Promise.resolve(getEntites()).then(function() {
+    //     return new Promise(function(resolve, reject) {
+    //         setTimeout(function() {
+    //             resolve(setOutput());
+    //         }, 5000);
+    //     });
+    // })
 }
 
-let listOfChildren=[];
-var list = [];
-let counter=0;
+// let listOfChildren=[];
+// var list = [];
+// let counter=0;
 
-async function getEntites(){
-    const sql ="SELECT * FROM system_data";
-    db.query(sql, async (err, result) => {
-        if(err) throw err;
-        for(var i=0; i<result.length; i++){
-             if(result[i].status!=null){
-                break;
-            }else{
-                var temp = result[i];
-                while(temp.parent_area!=null){
-                    counter++;
-                    for(var x=0; x<result.length; x++){
-                        if(result[x].area_id==temp.parent_area){
-                            temp = result[x];
-                        }
-                    }
-                }
-                listOfChildren.push([result[i].name, counter]);
-                counter=0;
-            }
-            await getAccess(result, i);
-        }
-        return list;
-    })
-}
+// async function getEntites(){
+//     const sql ="SELECT * FROM system_data";
+//     db.query(sql, async (err, result) => {
+//         if(err) throw err;
+//         for(var i=0; i<result.length; i++){
+//              if(result[i].status!=null){
+//                 break;
+//             }else{
+//                 var temp = result[i];
+//                 while(temp.parent_area!=null){
+//                     counter++;
+//                     for(var x=0; x<result.length; x++){
+//                         if(result[x].area_id==temp.parent_area){
+//                             temp = result[x];
+//                         }
+//                     }
+//                 }
+//                 listOfChildren.push([result[i].name, counter]);
+//                 counter=0;
+//             }
+//             await getAccess(result, i);
+//         }
+//         return list;
+//     })
+// }
 
-async function getAccess(result, i){
-    for(let j=i; j<result.length; j++){
-        if(result[j].parent_area == result[i].area_id && result[j].status!=null){
-            var nameArray = [];
-            const sql2 = "SELECT * FROM access_rules WHERE door=?";
-            db.query(sql2, result[j].area_id, async (error, result2) => {
-                if (error) throw(error);
-                for(let k=0; k<result2.length; k++){
-                    nameArray.push(result2[k].name);
-                }
-            });
-            listOfChildren.push([result[j].name, result[j].status, nameArray]);
-        }
-    }
-    list.push(listOfChildren);
-    listOfChildren=[];
-    return list;
-}
+// async function getAccess(result, i){
+//     for(let j=i; j<result.length; j++){
+//         if(result[j].parent_area == result[i].area_id && result[j].status!=null){
+//             var nameArray = [];
+//             const sql2 = "SELECT * FROM access_rules WHERE door=?";
+//             db.query(sql2, result[j].area_id, async (error, result2) => {
+//                 if (error) throw(error);
+//                 for(let k=0; k<result2.length; k++){
+//                     nameArray.push(result2[k].name);
+//                 }
+//             });
+//             listOfChildren.push([result[j].name, result[j].status, nameArray]);
+//         }
+//     }
+//     list.push(listOfChildren);
+//     listOfChildren=[];
+//     return list;
+// }
 
-async function setOutput(){
+ipcRenderer.on('setOutput', async(event, result) => {
+    await setOutput(result)
+})
+
+async function setOutput(list){
     var element = document.getElementById("container");
     var areaTag = document.createElement("pre");
     var doorTag = document.createElement("pre");
