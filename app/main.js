@@ -2,8 +2,8 @@ const { app, BrowserWindow, ipcMain, globalShortcut} = require('electron');
 const bcrypt = require('bcrypt');
 const path = require('path'); 
 let db = require('./database')
-let userData = require('./registered_users');
-let systemData = require('./system_data');
+let userData = require('../registered_users');
+let systemData = require('../system_data');
 
 var winLogin;
 var winIndex;
@@ -25,7 +25,7 @@ function loginWindow () {
          preload:path.join(__dirname, 'login.js')
         }
     })
-    winLogin.loadFile('login.html');
+    winLogin.loadFile('core/login.html');
 
     winLogin.on('close', function(){
         winLogin=null;
@@ -47,7 +47,7 @@ function indexWindow () {
          preload:path.join(__dirname, 'index.js')
         }
     })
-    winIndex.loadFile('index.html');
+    winIndex.loadFile('core/index.html');
 
     //Quit app when closed
     winIndex.on('closed',function(){
@@ -73,7 +73,7 @@ function viewWindow () {
          preload:path.join(__dirname, 'view.js')
         }
     })
-    winView.loadFile('view.html');
+    winView.loadFile('core/view.html');
 
     winView.webContents.openDevTools()
 
@@ -99,7 +99,7 @@ function manageWindow () {
          preload:path.join(__dirname, 'manage.js')
         }
     })
-    winManage.loadFile('manage.html');
+    winManage.loadFile('core/manage.html');
 
     //Quit app when closed
     winManage.on('close',function(){
@@ -131,7 +131,7 @@ function lockWindow () {
          preload:path.join(__dirname, 'lock.js')
         }
     })
-    winLock.loadFile('lock.html');
+    winLock.loadFile('core/lock.html');
 
     //Quit app when closed
     winLock.on('close',function(){
@@ -158,7 +158,7 @@ function unlockWindow () {
          preload:path.join(__dirname, 'unlock.js')
         }
     })
-    winUnlock.loadFile('unlock.html');
+    winUnlock.loadFile('core/unlock.html');
 
     //Quit app when closed
     winUnlock.on('close',function(){
